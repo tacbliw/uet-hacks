@@ -17,9 +17,10 @@ cookies = {
 i = 1
 noob_count = 0
 retries = 0
+prefix = '1802'
 while i < 2000:
     s = requests.Session()
-    username = '1802' + str(i).zfill(4)
+    username = prefix + str(i).zfill(4)
     password = username
     payload = {
         '__RequestVerificationToken': 'U0ejF3FU2EXSVnIHo1I7CLw1GfC3BwSnED1wzAHjH3itk-s6FI8vh9VQ-Z3gevLqbUANXj940sVMQCe767JTHT9LbG41',
