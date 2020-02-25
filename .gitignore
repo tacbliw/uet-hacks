@@ -1,2 +1,7 @@
+# general
 .vscode/
 __pycache__/
+
+# schedule_generator
+creds.json
+schedule.json
