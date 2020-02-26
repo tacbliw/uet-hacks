@@ -51,7 +51,7 @@ def clear_data(spread_sheet):
 def clear_all(spread_sheet):
     """Merged cells are hard to detect, create a blank sheet instead"""
     global sheet_id
-    new_worksheet = spread_sheet.add_worksheet(title=sheet_name + '_new', rows=1000, cols=26)
+    new_worksheet = spread_sheet.add_worksheet(title=sheet_name + '_new', rows=20, cols=10)
     current_sheet = spread_sheet.worksheet(sheet_name)
     spread_sheet.del_worksheet(current_sheet)
     new_worksheet.update_title(sheet_name)
@@ -80,15 +80,89 @@ def merge(spread_sheet, from_cell: tuple, to_cell: tuple, merge_type='MERGE_ALL'
     }
     return spread_sheet.batch_update(body)
 
-def format(spread_sheet, cell: tuple, data: str):
-    pass
+def format(spread_sheet, from_cell: tuple, to_cell: tuple, 
+            color=(255, 255, 255), wrap_strategy='LEGACY_WRAP', horizontal='TOP', vertical='LEFT'):
+    """
+    "from_cell" starts from 0
+    "to_cell" starts from 1
+    Using "repeatCell" instead of "updateCells" for editing multiple cells at once.
+    """
+    body = {
+        "requests": [
+            {
+                "repeatCell": {
+                    "range": {
+                        "sheetId": sheet_id,
+                        "startRowIndex": from_cell[0],
+                        "endRowIndex": to_cell[0],
+                        "startColumnIndex": from_cell[1],
+                        "endColumnIndex": to_cell[1]
+                    },
+                    "cell": {
+                        "userEnteredFormat": {
+                            "backgroundColor": {
+                                "red": color[0] / 255,
+                                "green": color[1] / 255,
+                                "blue": color[2] / 255,
+                                "alpha": 1
+                            },
+                            "horizontalAlignment": horizontal,
+                            "verticalAlignment": vertical,
+                            "wrapStrategy": wrap_strategy
+                        }
+                    },
+                    "fields": "userEnteredFormat"
+                }
+            }
+        ]
+    }
+    return spread_sheet.batch_update(body)
+
+def resize(spread_sheet):
+    body = {
+        "requests": [
+            {
+                "updateDimensionProperties": {
+                    "range": {
+                        "sheetId": sheet_id,
+                        "dimension": "COLUMNS",
+                        "startIndex": 0,
+                        "endIndex": 10
+                    },
+                    "properties": {
+                        "pixelSize": 80
+                    },
+                    "fields": "pixelSize"
+                }
+            },
+            {
+                "updateDimensionProperties": {
+                    "range": {
+                        "sheetId": sheet_id,
+                        "dimension": "ROWS",
+                        "startIndex": 0,
+                        "endIndex": 20
+                    },
+                    "properties": {
+                        "pixelSize": 50
+                    },
+                    "fields": "pixelSize"
+                }
+            }
+        ]
+    }
+    return spread_sheet.batch_update(body)
 
 def add_subject(sheet, text: str, time: str):
     # where to write ?
     weekday = int(time.split(' ')[0][1])
     from_hour = int(time.split(' ')[1].split('-')[0])
     to_hour = int(time.split(' ')[1].split('-')[1])
-    merge(sheet.spreadsheet, (from_hour, weekday-1), (to_hour+1, weekday), merge_type='MERGE_ALL')
+    merge(sheet.spreadsheet, (from_hour, weekday-1), (to_hour+1, weekday), 
+            merge_type='MERGE_ALL')
+    format(sheet.spreadsheet, (from_hour, weekday-1), (from_hour+1, weekday), 
+            color=(0xff, 0xd9, 0x66), wrap_strategy='LEGACY_WRAP', 
+            horizontal='CENTER', vertical='MIDDLE')
     sheet.update_cell(from_hour + 1, weekday, text)
 
 if __name__ == '__main__':
@@ -98,10 +172,13 @@ if __name__ == '__main__':
     spread_sheet = client.open(spread_sheet_name)
     sheet = spread_sheet.worksheet(sheet_name)
     sheet_id = sheet.id
-    # merge(spread_sheet, (1, 1), (3, 3))
 
     # build base schedule
     clear_all(spread_sheet)
+    resize(spread_sheet)
+    format(spread_sheet, (0, 0), (13, 7), color=(0x3d, 0x85, 0xc6), 
+            horizontal='CENTER', vertical='MIDDLE')
+
     weekday_cells = sheet.range('B1:F1')
     for i, cell in enumerate(weekday_cells, start=2):
         cell.value = weekday_text[i-2]
@@ -137,5 +214,4 @@ if __name__ == '__main__':
             for lab in labs:
                 text = name + ' (TH) \n' + lab['location']
                 add_subject(sheet, text, lab['time'])
-
     pprint(sheet_id)
