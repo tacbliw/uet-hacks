@@ -10,8 +10,8 @@ spread_sheet_name = 'test_sheet'
 # spread_sheet_id = '1_x3ON-UsXnPHbDF9vEMzMXTSb-Nh3uqY6PHaFf-O-OE'
 sheet_name = 'test_s'
 sheet_id = 0
-sheet_max_rows = 20
-sheet_max_cols = 10
+sheet_max_rows = 13
+sheet_max_cols = 7
 sheet_col_px = 80
 sheet_row_px = 50
 
@@ -55,7 +55,7 @@ def clear_data(spread_sheet):
 def clear_all(spread_sheet):
     """Merged cells are hard to detect, create a blank sheet instead"""
     global sheet_id
-    new_worksheet = spread_sheet.add_worksheet(title=sheet_name + '_new', rows=20, cols=10)
+    new_worksheet = spread_sheet.add_worksheet(title=sheet_name + '_new', rows=sheet_max_rows, cols=sheet_max_cols)
     current_sheet = spread_sheet.worksheet(sheet_name)
     spread_sheet.del_worksheet(current_sheet)
     new_worksheet.update_title(sheet_name)
@@ -183,7 +183,13 @@ if __name__ == '__main__':
     resize(spread_sheet)
     resize(spread_sheet, start=(1, 0), end=(sheet_max_rows, 1), col_px=20)
     resize(spread_sheet, start=(0, 1), end=(1, sheet_max_cols), row_px=20)
-    format(spread_sheet, (0, 0), (13, 7), color=(0x3d, 0x85, 0xc6), 
+    format(spread_sheet, (0, 0), (13, 7), color=(0xa5, 0xc8, 0x69), 
+            horizontal='CENTER', vertical='MIDDLE')
+    format(spread_sheet, (0, 0), (1, 7), color=(0x57, 0xad, 0x7a), 
+            horizontal='CENTER', vertical='MIDDLE')
+    format(spread_sheet, (0, 0), (13, 1), color=(0x57, 0xad, 0x7a), 
+            horizontal='CENTER', vertical='MIDDLE')
+    format(spread_sheet, (0, 6), (13, 7), color=(0x57, 0xad, 0x7a), 
             horizontal='CENTER', vertical='MIDDLE')
 
     weekday_cells = sheet.range('B1:F1')
