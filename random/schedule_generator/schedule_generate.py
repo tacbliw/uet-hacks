@@ -10,6 +10,10 @@ spread_sheet_name = 'test_sheet'
 # spread_sheet_id = '1_x3ON-UsXnPHbDF9vEMzMXTSb-Nh3uqY6PHaFf-O-OE'
 sheet_name = 'test_s'
 sheet_id = 0
+sheet_max_rows = 20
+sheet_max_cols = 10
+sheet_col_px = 80
+sheet_row_px = 50
 
 scope = [
     "https://spreadsheets.google.com/feeds",
@@ -118,7 +122,8 @@ def format(spread_sheet, from_cell: tuple, to_cell: tuple,
     }
     return spread_sheet.batch_update(body)
 
-def resize(spread_sheet):
+def resize(spread_sheet, start=(0, 0), end=(sheet_max_rows, sheet_max_cols), 
+            col_px=sheet_col_px, row_px=sheet_row_px):
     body = {
         "requests": [
             {
@@ -126,11 +131,11 @@ def resize(spread_sheet):
                     "range": {
                         "sheetId": sheet_id,
                         "dimension": "COLUMNS",
-                        "startIndex": 0,
-                        "endIndex": 10
+                        "startIndex": start[1],
+                        "endIndex": end[1]
                     },
                     "properties": {
-                        "pixelSize": 80
+                        "pixelSize": col_px
                     },
                     "fields": "pixelSize"
                 }
@@ -140,11 +145,11 @@ def resize(spread_sheet):
                     "range": {
                         "sheetId": sheet_id,
                         "dimension": "ROWS",
-                        "startIndex": 0,
-                        "endIndex": 20
+                        "startIndex": start[0],
+                        "endIndex": end[0]
                     },
                     "properties": {
-                        "pixelSize": 50
+                        "pixelSize": row_px
                     },
                     "fields": "pixelSize"
                 }
@@ -176,6 +181,8 @@ if __name__ == '__main__':
     # build base schedule
     clear_all(spread_sheet)
     resize(spread_sheet)
+    resize(spread_sheet, start=(1, 0), end=(sheet_max_rows, 1), col_px=20)
+    resize(spread_sheet, start=(0, 1), end=(1, sheet_max_cols), row_px=20)
     format(spread_sheet, (0, 0), (13, 7), color=(0x3d, 0x85, 0xc6), 
             horizontal='CENTER', vertical='MIDDLE')
 
