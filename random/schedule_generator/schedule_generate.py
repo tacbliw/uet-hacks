@@ -7,7 +7,6 @@ from gspread.models import Cell
 weekday_text = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 spread_sheet_name = 'test_sheet'
-# spread_sheet_id = '1_x3ON-UsXnPHbDF9vEMzMXTSb-Nh3uqY6PHaFf-O-OE'
 sheet_name = 'test_s'
 sheet_id = 0
 sheet_max_rows = 13
@@ -56,8 +55,11 @@ def clear_all(spread_sheet):
     """Merged cells are hard to detect, create a blank sheet instead"""
     global sheet_id
     new_worksheet = spread_sheet.add_worksheet(title=sheet_name + '_new', rows=sheet_max_rows, cols=sheet_max_cols)
-    current_sheet = spread_sheet.worksheet(sheet_name)
-    spread_sheet.del_worksheet(current_sheet)
+    try:
+        current_sheet = spread_sheet.worksheet(sheet_name)
+        spread_sheet.del_worksheet(current_sheet)
+    except gspread.WorksheetNotFound:
+        pass
     new_worksheet.update_title(sheet_name)
     sheet_id = new_worksheet.id
     return new_worksheet
@@ -175,14 +177,19 @@ if __name__ == '__main__':
     client = gspread.authorize(creds)
 
     spread_sheet = client.open(spread_sheet_name)
-    sheet = spread_sheet.worksheet(sheet_name)
-    sheet_id = sheet.id
+    try:
+        sheet = spread_sheet.worksheet(sheet_name)
+        sheet_id = sheet.id
+    except:
+        pass
 
     # build base schedule
     clear_all(spread_sheet)
     resize(spread_sheet)
     resize(spread_sheet, start=(1, 0), end=(sheet_max_rows, 1), col_px=20)
     resize(spread_sheet, start=(0, 1), end=(1, sheet_max_cols), row_px=20)
+    resize(spread_sheet, start=(1, sheet_max_cols-1), end=(sheet_max_rows, sheet_max_cols), 
+            col_px=70)
     format(spread_sheet, (0, 0), (13, 7), color=(0xa5, 0xc8, 0x69), 
             horizontal='CENTER', vertical='MIDDLE')
     format(spread_sheet, (0, 0), (1, 7), color=(0x57, 0xad, 0x7a), 
@@ -192,6 +199,7 @@ if __name__ == '__main__':
     format(spread_sheet, (0, 6), (13, 7), color=(0x57, 0xad, 0x7a), 
             horizontal='CENTER', vertical='MIDDLE')
 
+    sheet = spread_sheet.worksheet(sheet_name)
     weekday_cells = sheet.range('B1:F1')
     for i, cell in enumerate(weekday_cells, start=2):
         cell.value = weekday_text[i-2]
