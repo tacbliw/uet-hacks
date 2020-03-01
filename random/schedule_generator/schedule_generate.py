@@ -7,7 +7,7 @@ from gspread.models import Cell
 weekday_text = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 spread_sheet_name = 'test_sheet'
-sheet_name = 'test_s'
+sheet_name = 'schedule'
 sheet_id = 0
 sheet_max_rows = 13
 sheet_max_cols = 7
