@@ -43,7 +43,7 @@ Contains an array of all subjects.
 Change the spreadsheet and worksheet name to match your sheet.
 ```py
 spread_sheet_name = 'test_sheet'
-sheet_name = 'test_s'
+sheet_name = 'schedule'
 ```
 Run the script
 ```
