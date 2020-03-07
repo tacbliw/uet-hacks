@@ -17,7 +17,7 @@ Follow the instruction [here](https://www.youtube.com/watch?v=cnPlKLEGR7E) to ge
 
 ### Prepare `schedule.json`
 
-Contains an array of all subjects.
+Contains an array of all subjects. Each as follow
 ```json
 {
     "code": "INT1003 5",
