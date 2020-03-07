@@ -58,10 +58,10 @@ func login(client *http.Client, username string, password string) {
 	payload.Set("Password", password)
 	payload.Set("__RequestVerificationToken", "cP9Q5HM_m1WeS0umvbInUJUkQiVFO95phgxli1cln_J7C7cSnmxZcNCWGtY2_uOCE_RyVJA5tguT7AgYaG9Gc8u69CU1")
 	client.PostForm(loginURL, payload)
+	client.Post(listURL, "application/x-www-form-urlencoded", nil)
 }
 
 func register(client *http.Client, target []string) {
-	client.Post(listURL, "application/x-www-form-urlencoded", nil)
 	for _, rowindex := range target {
 		u := strings.ReplaceAll(pickURL, "{}", rowindex)
 		client.Post(u, "application/x-www-form-urlencoded", nil)

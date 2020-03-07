@@ -7,7 +7,7 @@ from pprint import pprint
 # import logging
 # import http.client as http_client
 # http_client.HTTPConnection.debuglevel = 1
-# 
+
 # logging.basicConfig()
 # logging.getLogger().setLevel(logging.DEBUG)
 # requests_log = logging.getLogger("requests.packages.urllib3")
@@ -50,8 +50,8 @@ post_header = {
 ses = requests.Session()
 requests.utils.add_dict_to_cookiejar(ses.cookies, cookies)
 response = ses.post(URL, data=form_body, headers=headers, cookies=cookies)
+response = ses.post(URL_LIST, headers=post_header)
 while True:
-    response = ses.post(URL_LIST, headers=post_header)
     response = ses.post(URL_PICK, headers=post_header)
     response = ses.post(URL_FIN, headers=post_header)
     # print(response.status_code)
