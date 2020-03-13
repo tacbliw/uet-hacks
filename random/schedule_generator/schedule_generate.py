@@ -87,7 +87,8 @@ def merge(spread_sheet, from_cell: tuple, to_cell: tuple, merge_type='MERGE_ALL'
     return spread_sheet.batch_update(body)
 
 def format(spread_sheet, from_cell: tuple, to_cell: tuple, 
-            color=(255, 255, 255), wrap_strategy='LEGACY_WRAP', horizontal='TOP', vertical='LEFT'):
+            bg_color=(255, 255, 255), text_color=(0, 0, 0),
+            wrap_strategy='LEGACY_WRAP', horizontal='TOP', vertical='LEFT'):
     """
     "from_cell" starts from 0
     "to_cell" starts from 1
@@ -107,10 +108,18 @@ def format(spread_sheet, from_cell: tuple, to_cell: tuple,
                     "cell": {
                         "userEnteredFormat": {
                             "backgroundColor": {
-                                "red": color[0] / 255,
-                                "green": color[1] / 255,
-                                "blue": color[2] / 255,
+                                "red": bg_color[0] / 255,
+                                "green": bg_color[1] / 255, 
+                                "blue": bg_color[2] / 255,
                                 "alpha": 1
+                            },
+                            "textFormat": {
+                                "foregroundColor": {
+                                    "red": text_color[0] / 255,
+                                    "green": text_color[1] / 255, 
+                                    "blue": text_color[2] / 255,
+                                    "alpha": 1
+                                }
                             },
                             "horizontalAlignment": horizontal,
                             "verticalAlignment": vertical,
@@ -168,7 +177,7 @@ def add_subject(sheet, text: str, time: str):
     merge(sheet.spreadsheet, (from_hour, weekday-1), (to_hour+1, weekday), 
             merge_type='MERGE_ALL')
     format(sheet.spreadsheet, (from_hour, weekday-1), (from_hour+1, weekday), 
-            color=(0xff, 0xd9, 0x66), wrap_strategy='LEGACY_WRAP', 
+            bg_color=(0xff, 0xd9, 0x66), wrap_strategy='LEGACY_WRAP', 
             horizontal='CENTER', vertical='MIDDLE')
     sheet.update_cell(from_hour + 1, weekday, text)
 
@@ -190,13 +199,17 @@ if __name__ == '__main__':
     resize(spread_sheet, start=(0, 1), end=(1, sheet_max_cols), row_px=20)
     resize(spread_sheet, start=(1, sheet_max_cols-1), end=(sheet_max_rows, sheet_max_cols), 
             col_px=70)
-    format(spread_sheet, (0, 0), (13, 7), color=(0xa5, 0xc8, 0x69), 
+    format(spread_sheet, (0, 0), (13, 7), 
+            bg_color=(0xa5, 0xc8, 0x69), text_color=(0x0, 0x0, 0x0),
             horizontal='CENTER', vertical='MIDDLE')
-    format(spread_sheet, (0, 0), (1, 7), color=(0x57, 0xad, 0x7a), 
+    format(spread_sheet, (0, 0), (1, 7), 
+            bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
             horizontal='CENTER', vertical='MIDDLE')
-    format(spread_sheet, (0, 0), (13, 1), color=(0x57, 0xad, 0x7a), 
+    format(spread_sheet, (0, 0), (13, 1), 
+            bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
             horizontal='CENTER', vertical='MIDDLE')
-    format(spread_sheet, (0, 6), (13, 7), color=(0x57, 0xad, 0x7a), 
+    format(spread_sheet, (0, 6), (13, 7), 
+            bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
             horizontal='CENTER', vertical='MIDDLE')
 
     sheet = spread_sheet.worksheet(sheet_name)
