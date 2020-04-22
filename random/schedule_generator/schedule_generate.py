@@ -238,7 +238,7 @@ if __name__ == '__main__':
         time = subject['time']
         location = subject['location']
         labs = []
-        if 'labs' in subject.keys():
+        if 'labs' in subject:
             labs = subject['labs']
         
         # let's go
