@@ -49,7 +49,7 @@ s = requests.Session()
 # login
 login_url = "https://onlinecourses.uet.vnu.edu.vn/login/index.php"
 r = s.post(login_url, data={'username': username, 'password': password}, allow_redirects=False)
-# the server response with 2 MoodleSession tokens, thus we have to choose manually
+# the server respond with 2 MoodleSession tokens, thus we have to choose manually
 m = re.findall(r'MoodleSession=([a-z0-9]+)', r.headers['Set-Cookie'])
 session_cookie = requests.cookies.create_cookie(domain='onlinecourses.uet.vnu.edu.vn', name='MoodleSession', value=m[1])
 s.cookies.set_cookie(session_cookie)
