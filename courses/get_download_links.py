@@ -5,7 +5,7 @@ import http.client
 from scrapy import Selector
 from pprint import pprint
 
-#For debug
+# For debug
 # http.client.HTTPConnection.debuglevel = 1
 # logging.basicConfig()
 # logging.getLogger().setLevel(logging.DEBUG)

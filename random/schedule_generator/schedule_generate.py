@@ -4,13 +4,14 @@ import json
 from pprint import pprint
 from gspread.models import Cell
 
-weekday_text = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday']
+weekday_text = ['Monday', 'Tuesday', 'Wednesday',
+                'Thursday', 'Friday', 'Saturday', 'Sunday']
 
 spread_sheet_name = 'uet path'
 sheet_name = 'schedule'
 sheet_id = 0
 sheet_max_rows = 13
-sheet_max_cols = 7
+sheet_max_cols = 8
 sheet_col_px = 80
 sheet_row_px = 50
 
@@ -20,6 +21,7 @@ scope = [
     "https://www.googleapis.com/auth/drive.file",
     "https://www.googleapis.com/auth/drive"
 ]
+
 
 def clear_formatting(spread_sheet):
     body = {
@@ -36,6 +38,7 @@ def clear_formatting(spread_sheet):
     }
     return spread_sheet.batch_update(body)
 
+
 def clear_data(spread_sheet):
     body = {
         "requests": [
@@ -51,10 +54,12 @@ def clear_data(spread_sheet):
     }
     return spread_sheet.batch_update(body)
 
+
 def clear_all(spread_sheet):
     """Merged cells are hard to detect, create a blank sheet instead"""
     global sheet_id
-    new_worksheet = spread_sheet.add_worksheet(title=sheet_name + '_new', rows=sheet_max_rows, cols=sheet_max_cols)
+    new_worksheet = spread_sheet.add_worksheet(
+        title=sheet_name + '_new', rows=sheet_max_rows, cols=sheet_max_cols)
     try:
         current_sheet = spread_sheet.worksheet(sheet_name)
         spread_sheet.del_worksheet(current_sheet)
@@ -63,6 +68,7 @@ def clear_all(spread_sheet):
     new_worksheet.update_title(sheet_name)
     sheet_id = new_worksheet.id
     return new_worksheet
+
 
 def merge(spread_sheet, from_cell: tuple, to_cell: tuple, merge_type='MERGE_ALL'):
     """
@@ -86,9 +92,10 @@ def merge(spread_sheet, from_cell: tuple, to_cell: tuple, merge_type='MERGE_ALL'
     }
     return spread_sheet.batch_update(body)
 
-def format(spread_sheet, from_cell: tuple, to_cell: tuple, 
-            bg_color=(255, 255, 255), text_color=(0, 0, 0),
-            wrap_strategy='LEGACY_WRAP', horizontal='TOP', vertical='LEFT'):
+
+def format(spread_sheet, from_cell: tuple, to_cell: tuple,
+           bg_color=(255, 255, 255), text_color=(0, 0, 0),
+           wrap_strategy='LEGACY_WRAP', horizontal='TOP', vertical='LEFT'):
     """
     "from_cell" starts from 0
     "to_cell" starts from 1
@@ -109,14 +116,14 @@ def format(spread_sheet, from_cell: tuple, to_cell: tuple,
                         "userEnteredFormat": {
                             "backgroundColor": {
                                 "red": bg_color[0] / 255,
-                                "green": bg_color[1] / 255, 
+                                "green": bg_color[1] / 255,
                                 "blue": bg_color[2] / 255,
                                 "alpha": 1
                             },
                             "textFormat": {
                                 "foregroundColor": {
                                     "red": text_color[0] / 255,
-                                    "green": text_color[1] / 255, 
+                                    "green": text_color[1] / 255,
                                     "blue": text_color[2] / 255,
                                     "alpha": 1
                                 }
@@ -133,8 +140,9 @@ def format(spread_sheet, from_cell: tuple, to_cell: tuple,
     }
     return spread_sheet.batch_update(body)
 
-def resize(spread_sheet, start=(0, 0), end=(sheet_max_rows, sheet_max_cols), 
-            col_px=sheet_col_px, row_px=sheet_row_px):
+
+def resize(spread_sheet, start=(0, 0), end=(sheet_max_rows, sheet_max_cols),
+           col_px=sheet_col_px, row_px=sheet_row_px):
     body = {
         "requests": [
             {
@@ -169,20 +177,23 @@ def resize(spread_sheet, start=(0, 0), end=(sheet_max_rows, sheet_max_cols),
     }
     return spread_sheet.batch_update(body)
 
+
 def add_subject(sheet, text: str, time: str):
     # where to write ?
     weekday = int(time.split(' ')[0][1])
     from_hour = int(time.split(' ')[1].split('-')[0])
     to_hour = int(time.split(' ')[1].split('-')[1])
-    merge(sheet.spreadsheet, (from_hour, weekday-1), (to_hour+1, weekday), 
-            merge_type='MERGE_ALL')
-    format(sheet.spreadsheet, (from_hour, weekday-1), (from_hour+1, weekday), 
-            bg_color=(0xff, 0xd9, 0x66), wrap_strategy='LEGACY_WRAP', 
-            horizontal='CENTER', vertical='MIDDLE')
+    merge(sheet.spreadsheet, (from_hour, weekday-1), (to_hour+1, weekday),
+          merge_type='MERGE_ALL')
+    format(sheet.spreadsheet, (from_hour, weekday-1), (from_hour+1, weekday),
+           bg_color=(0xff, 0xd9, 0x66), wrap_strategy='LEGACY_WRAP',
+           horizontal='CENTER', vertical='MIDDLE')
     sheet.update_cell(from_hour + 1, weekday, text)
 
+
 if __name__ == '__main__':
-    creds = ServiceAccountCredentials.from_json_keyfile_name('creds.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name(
+        'creds.json', scope)
     client = gspread.authorize(creds)
 
     spread_sheet = client.open(spread_sheet_name)
@@ -197,23 +208,23 @@ if __name__ == '__main__':
     resize(spread_sheet)
     resize(spread_sheet, start=(1, 0), end=(sheet_max_rows, 1), col_px=20)
     resize(spread_sheet, start=(0, 1), end=(1, sheet_max_cols), row_px=20)
-    resize(spread_sheet, start=(1, sheet_max_cols-1), end=(sheet_max_rows, sheet_max_cols), 
-            col_px=70)
-    format(spread_sheet, (0, 0), (13, 7), 
-            bg_color=(0xa5, 0xc8, 0x69), text_color=(0x0, 0x0, 0x0),
-            horizontal='CENTER', vertical='MIDDLE')
-    format(spread_sheet, (0, 0), (1, 7), 
-            bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
-            horizontal='CENTER', vertical='MIDDLE')
-    format(spread_sheet, (0, 0), (13, 1), 
-            bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
-            horizontal='CENTER', vertical='MIDDLE')
-    format(spread_sheet, (0, 6), (13, 7), 
-            bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
-            horizontal='CENTER', vertical='MIDDLE')
+    resize(spread_sheet, start=(1, sheet_max_cols-1), end=(sheet_max_rows, sheet_max_cols),
+           col_px=70)
+    format(spread_sheet, (0, 0), (13, 8),
+           bg_color=(0xa5, 0xc8, 0x69), text_color=(0x0, 0x0, 0x0),
+           horizontal='CENTER', vertical='MIDDLE')
+    format(spread_sheet, (0, 0), (1, 8),
+           bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
+           horizontal='CENTER', vertical='MIDDLE')
+    format(spread_sheet, (0, 0), (13, 1),
+           bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
+           horizontal='CENTER', vertical='MIDDLE')
+    format(spread_sheet, (0, 7), (13, 8),
+           bg_color=(0x57, 0xad, 0x7a), text_color=(0xff, 0xff, 0xff),
+           horizontal='CENTER', vertical='MIDDLE')
 
     sheet = spread_sheet.worksheet(sheet_name)
-    weekday_cells = sheet.range('B1:F1')
+    weekday_cells = sheet.range('B1:G1')
     for i, cell in enumerate(weekday_cells, start=2):
         cell.value = weekday_text[i-2]
 
@@ -221,16 +232,17 @@ if __name__ == '__main__':
     for i, cell in enumerate(index_cells, start=1):
         cell.value = i
 
-    time_cells = sheet.range('G2:G13')
+    time_cells = sheet.range('H2:H13')
     for i, cell in enumerate(time_cells, start=7):
         cell.value = f'{i}h - {i + 1}h'
 
     cell_list = weekday_cells + index_cells + time_cells
     sheet.update_cells(cell_list)
-    
+
     # importing schedule
     cell_list = []
-    schedule = json.loads(open('./schedule.json', 'rb').read(), encoding='utf-8')
+    schedule = json.loads(
+        open('./schedule.json', 'rb').read(), encoding='utf-8')
     for subject in schedule:
         # getting values
         code = subject['code']
@@ -240,12 +252,12 @@ if __name__ == '__main__':
         labs = []
         if 'labs' in subject:
             labs = subject['labs']
-        
+
         # let's go
-        text = name + '\n' + location
+        text = code + '\n' + name + '\n' + location
         add_subject(sheet, text, time)
         if labs:
             for lab in labs:
-                text = name + ' (TH) \n' + lab['location']
+                text = code + '\n' + name + ' (TH) \n' + lab['location']
                 add_subject(sheet, text, lab['time'])
     pprint(sheet_id)

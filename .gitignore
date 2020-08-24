@@ -1,7 +1,10 @@
 # general
 .vscode/
 __pycache__/
+bin/
+*.zip
 
 # schedule_generator
 creds.json
 schedule.json
+out.txt

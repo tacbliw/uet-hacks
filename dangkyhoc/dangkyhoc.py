@@ -14,7 +14,7 @@ from pprint import pprint
 # requests_log.setLevel(logging.DEBUG)
 # requests_log.propagate = True
 
-TARGET = 573
+TARGET = 114
 
 URL = "http://dangkyhoc.vnu.edu.vn/dang-nhap/"
 URL_PICK = f"http://dangkyhoc.vnu.edu.vn/chon-mon-hoc/{TARGET}/1/1"
@@ -50,10 +50,10 @@ post_header = {
 ses = requests.Session()
 requests.utils.add_dict_to_cookiejar(ses.cookies, cookies)
 response = ses.post(URL, data=form_body, headers=headers, cookies=cookies)
+print(dict(ses.cookies))
 response = ses.post(URL_LIST, headers=post_header)
 while True:
     response = ses.post(URL_PICK, headers=post_header)
     response = ses.post(URL_FIN, headers=post_header)
     # print(response.status_code)
     print(response.text[:200])
-

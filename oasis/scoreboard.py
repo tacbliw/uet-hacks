@@ -9,7 +9,7 @@ from pprint import pprint
 # import logging
 # import http.client as http_client
 # http_client.HTTPConnection.debuglevel = 1
-# 
+#
 # logging.basicConfig()
 # logging.getLogger().setLevel(logging.DEBUG)
 # requests_log = logging.getLogger("requests.packages.urllib3")
@@ -20,7 +20,7 @@ username = os.environ['UET_USER']
 password = os.environ['UET_PASS']
 
 URL = "http://oasis.uet.vnu.edu.vn/"
-login_path ='api/auth/signin'
+login_path = 'api/auth/signin'
 ranking_path = 'api/ranking/courses/6?page=0&size=50'
 
 
@@ -55,5 +55,6 @@ print('+' + '-' * 28 + '+')
 print("|{0:<20s}|{1:>7s}|".format("Name", "Score"))
 print('+' + '-' * 28 + '+')
 for student in studentList:
-    print("|{0:<20s}|{1:>7d}|".format(student['student_name'], student['score']))
+    print("|{0:<20s}|{1:>7d}|".format(
+        student['student_name'], student['score']))
 print('+' + '-' * 28 + '+')
