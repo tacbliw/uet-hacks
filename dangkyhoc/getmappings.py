@@ -51,7 +51,7 @@ f = codecs.open('out.txt', 'w+', encoding='utf-8')
 
 current_data_rowindex = 1
 current_registered_count = 7
-while current_data_rowindex < 760:
+while current_data_rowindex < 1000:
     status_code = 503
     try:
         ses = requests.Session()
