@@ -16,7 +16,7 @@ from pprint import pprint
 USERNAME = os.environ['UET_USER']
 PASSWORD = os.environ['UET_PASS']
 
-COURSE_ID = 3510
+COURSE_ID = 5676
 login_page_url = "https://courses.uet.vnu.edu.vn/alternateLogin/index.php"
 login_post_url = "https://courses.uet.vnu.edu.vn/login/index.php"
 course_url = 'https://courses.uet.vnu.edu.vn/course/view.php?id={}'
@@ -48,4 +48,6 @@ r = ses.get(course_url.format(COURSE_ID), headers=headers)
 sel = Selector(text=r.text)
 resource_path = '//div[@class="activityinstance"]/a/@href'
 resources = sel.xpath(resource_path).extract()
-pprint([x for x in resources if 'resource' in x])
+for x in resources:
+    if 'resource' in x:
+        print(x)

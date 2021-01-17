@@ -50,7 +50,6 @@ post_header = {
 f = codecs.open('out.txt', 'w+', encoding='utf-8')
 
 current_data_rowindex = 1
-current_registered_count = 7
 while current_data_rowindex < 1000:
     status_code = 503
     try:
@@ -85,10 +84,13 @@ while current_data_rowindex < 1000:
         subject_schedule = td[5].xpath('string(.)').get().strip()
 
         print("{0:>3} | {1:<12} | {2} - {3} - {4}".format(current_data_rowindex,
-                                                          subject_code, subject_schedule, subject_lecturer, subject_name))
+                                                        subject_code, subject_schedule, subject_lecturer, subject_name))
         f.write("{0:>3} | {1:<12} | {2} - {3} - {4}\n".format(current_data_rowindex,
-                                                              subject_code, subject_schedule, subject_lecturer, subject_name))
-    except requests.exceptions.ConnectionError:
+                                                            subject_code, subject_schedule, subject_lecturer, subject_name))
+    except KeyboardInterrupt:
+        break
+    except Exception as e:
+        print(e)
         continue
 
     current_data_rowindex += 1

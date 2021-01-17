@@ -51,6 +51,7 @@ func main() {
 	loginSuccess := false
 	for !loginSuccess {
 		loginSuccess = login(client, username, password)
+		time.Sleep(10 * time.Second)
 	}
 	loggedIn = true
 	fmt.Println("Login Success")
@@ -67,7 +68,7 @@ func main() {
 			_ = register(client, os.Args[3:])
 			<-guard
 		}(client)
-		time.Sleep(10 * time.Millisecond)
+		time.Sleep(1 * time.Second)
 	}
 }
 
