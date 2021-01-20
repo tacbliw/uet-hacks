@@ -14,7 +14,7 @@ cookies = {
     'ASP.NET_SessionId': '5iqxbpsfj12cbs3zyzlhtt3j'
 }
 
-f = open('out.txt', 'w+')
+f = open('out.txt', 'a')
 
 i = 1
 noob_count = 0

