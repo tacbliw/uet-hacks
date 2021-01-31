@@ -47,7 +47,7 @@ sheet_name = 'schedule'
 ```
 Run the script
 ```
-python schedule_generator.py
+python schedule-generator.py
 ```
 
 ## References
