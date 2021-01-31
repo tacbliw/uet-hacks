@@ -84,23 +84,23 @@ def query(payload: dict) -> [ResultEntry]:
     return parse_resp(r.text)
 
 paths = []
+cache = {}
 
 def trace(f1: ResultEntry, me: ResultEntry, path, depth=2):
-    print(f"trace {depth}: {path}")
-
     if depth <= 0:
         return
     
+    print(f"trace {depth}: {path}")
     classes = query(build_payload(masvTitle=f1.masvTitle))
     for c in classes:
         if c.tenlopmonhocTitle in path:
             continue
         participants = query(build_payload(tenlopmonhocTitle=c.tenlopmonhocTitle))
-        for p in participants:
-            if p.masvTitle == me.masvTitle:
-                global paths
-                paths.append(path + (c.tenlopmonhocTitle, me.masvTitle))
-                continue
+        if any(x.masvTitle == me.masvTitle for x in participants):
+            global paths
+            current_path = path + (c.tenlopmonhocTitle, me.masvTitle)
+            paths.append(current_path)
+            continue
         for p in participants:
             trace(p, me, path + (c.tenlopmonhocTitle, p.masvTitle), depth - 1)
 
